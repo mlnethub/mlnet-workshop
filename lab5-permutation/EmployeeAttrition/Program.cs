@@ -59,7 +59,8 @@ namespace EmployeeAttrition
                 }, OneHotEncodingEstimator.OutputKind.Indicator);
 
             featurizePipeline = featurizePipeline.Append(mlContext.Transforms.Concatenate("Features", allFeatureNames))
-                                .Append(mlContext.Transforms.NormalizeMinMax("Features", "Features"));
+                                .Append(mlContext.Transforms.NormalizeMinMax("Features", "Features"))
+                                .AppendCacheCheckpoint(mlContext);
 
             ConsoleHelper.ConsoleWriteHeader("=============== Begin to train the model ===============");
 
@@ -77,12 +78,6 @@ namespace EmployeeAttrition
             var trainPipeline = featurizePipeline.Append(trainer);
             var trainedModel = trainPipeline.Fit(trainData);
 
-            ConsoleHelper.ConsoleWriteHeader("=============== Trained model successfully ===============");
-
-            var viewTrainPipeline = mlContext.Transforms
-                .CalculateFeatureContribution(trainedModel.LastTransformer)
-                .Fit(trainPipeline.Fit(trainData).Transform(trainData));
-
             Console.WriteLine("===== Evaluating Model's accuracy with Test data =====");
 
             var testDataPredictions = trainedModel.Transform(testData);
@@ -93,10 +88,10 @@ namespace EmployeeAttrition
 
             Console.WriteLine("===== Permutation Test =====");
 
-            var permuteTestData = featurizePipeline.Fit(trainData).Transform(trainData);
+            var transformedData = trainedModel.Transform(trainData);
             var permutationMetrics = mlContext.BinaryClassification.PermutationFeatureImportance(
                     predictionTransformer: trainedModel.LastTransformer,
-                    data: permuteTestData,
+                    data: transformedData,
                     labelColumnName: nameof(Employee.Attrition),
                     permutationCount: 50);
 
@@ -104,9 +99,9 @@ namespace EmployeeAttrition
             for (int i = 0; i < allFeatureNames.Count(); i++)
             {
                 var slotField = new VBuffer<ReadOnlyMemory<char>>();
-                if (permuteTestData.Schema[allFeatureNames[i]].HasSlotNames())
+                if (transformedData.Schema[allFeatureNames[i]].HasSlotNames())
                 {
-                    permuteTestData.Schema[allFeatureNames[i]].GetSlotNames(ref slotField);
+                    transformedData.Schema[allFeatureNames[i]].GetSlotNames(ref slotField);
                     for (int j = 0; j < slotField.Length; j++)
                     {
                         mapFields.Add(allFeatureNames[i]);
