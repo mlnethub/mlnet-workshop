@@ -17,7 +17,7 @@ namespace BikeSharingDemand
 
         private static string TrainingDataLocation = GetAbsolutePath(TrainingDataRelativePath);
         private static string TestDataLocation = GetAbsolutePath(TestDataRelativePath);
-        
+
         static void Main(string[] args)
         {
             // Create MLContext to be shared across the model creation workflow objects 
@@ -25,8 +25,8 @@ namespace BikeSharingDemand
             var mlContext = new MLContext(seed: 0);
 
             // 1. Common data loading configuration
-            var trainingDataView = mlContext.Data.LoadFromTextFile<DemandObservation>(path: TrainingDataLocation, hasHeader:true, separatorChar: ',');
-            var testDataView = mlContext.Data.LoadFromTextFile<DemandObservation>(path: TestDataLocation, hasHeader:true, separatorChar: ',');
+            var trainingDataView = mlContext.Data.LoadFromTextFile<DemandObservation>(path: TrainingDataLocation, hasHeader: true, separatorChar: ',');
+            var testDataView = mlContext.Data.LoadFromTextFile<DemandObservation>(path: TestDataLocation, hasHeader: true, separatorChar: ',');
 
             // 2. Common data pre-process with pipeline data transformations
 
@@ -37,12 +37,12 @@ namespace BikeSharingDemand
                             nameof(DemandObservation.WorkingDay), nameof(DemandObservation.Weather), nameof(DemandObservation.Temperature),
                             nameof(DemandObservation.NormalizedTemperature), nameof(DemandObservation.Humidity), nameof(DemandObservation.Windspeed))
                             .AppendCacheCheckpoint(mlContext);
-                            // Use in-memory cache for small/medium datasets to lower training time. 
-                            // Do NOT use it (remove .AppendCacheCheckpoint()) when handling very large datasets.
+            // Use in-memory cache for small/medium datasets to lower training time. 
+            // Do NOT use it (remove .AppendCacheCheckpoint()) when handling very large datasets.
 
             // (Optional) Peek data in training DataView after applying the ProcessPipeline's transformations  
-            Common.ConsoleHelper.PeekDataViewInConsole(mlContext, trainingDataView, dataProcessPipeline, 10);
-            Common.ConsoleHelper.PeekVectorColumnDataInConsole(mlContext, "Features", trainingDataView, dataProcessPipeline, 10);
+            // Common.ConsoleHelper.PeekDataViewInConsole(mlContext, trainingDataView, dataProcessPipeline, 10);
+            // Common.ConsoleHelper.PeekVectorColumnDataInConsole(mlContext, "Features", trainingDataView, dataProcessPipeline, 10);
 
             // Definition of regression trainers/algorithms to use
             //var regressionLearners = new (string name, IEstimator<ITransformer> value)[]
@@ -68,7 +68,7 @@ namespace BikeSharingDemand
 
                 Console.WriteLine("===== Evaluating Model's accuracy with Test data =====");
                 IDataView predictions = trainedModel.Transform(testDataView);
-                var metrics = mlContext.Regression.Evaluate(data:predictions, labelColumnName:"Label", scoreColumnName: "Score");               
+                var metrics = mlContext.Regression.Evaluate(data: predictions, labelColumnName: "Label", scoreColumnName: "Score");
                 ConsoleHelper.PrintRegressionMetrics(trainer.value.ToString(), metrics);
 
                 //Save the model file that can be used by any application
@@ -92,9 +92,14 @@ namespace BikeSharingDemand
                 // Create prediction engine related to the loaded trained model
                 var predEngine = mlContext.Model.CreatePredictionEngine<DemandObservation, DemandPrediction>(trainedModel);
 
+                /*
                 Console.WriteLine($"================== Visualize/test 10 predictions for model {learner.name}Model.zip ==================");
                 //Visualize 10 tests comparing prediction with actual/observed values from the test dataset
                 ModelScoringTester.VisualizeSomePredictions(mlContext ,learner.name, TestDataLocation, predEngine, 10);
+                */
+                var sample = DemandObservationSample.SingleDemandSampleData;
+                var prediction = predEngine.Predict(sample);
+                Console.WriteLine($"{learner.name}:   {prediction.PredictedCount}");
             }
 
             // Common.ConsoleHelper.ConsolePressAnyKey();
