@@ -32,10 +32,18 @@ namespace BikeSharingDemand
 
             // Concatenate all the numeric columns into a single features column
             var dataProcessPipeline = mlContext.Transforms.Concatenate("Features",
-                            nameof(DemandObservation.Season), nameof(DemandObservation.Year), nameof(DemandObservation.Month),
-                            nameof(DemandObservation.Hour), nameof(DemandObservation.Holiday), nameof(DemandObservation.Weekday),
-                            nameof(DemandObservation.WorkingDay), nameof(DemandObservation.Weather), nameof(DemandObservation.Temperature),
-                            nameof(DemandObservation.NormalizedTemperature), nameof(DemandObservation.Humidity), nameof(DemandObservation.Windspeed))
+                            nameof(DemandObservation.Season), 
+                            nameof(DemandObservation.Year), 
+                            nameof(DemandObservation.Month),
+                            nameof(DemandObservation.Hour), 
+                            nameof(DemandObservation.Holiday), 
+                            nameof(DemandObservation.Weekday),
+                            nameof(DemandObservation.WorkingDay), 
+                            nameof(DemandObservation.Weather), 
+                            nameof(DemandObservation.Temperature),
+                            nameof(DemandObservation.NormalizedTemperature), 
+                            nameof(DemandObservation.Humidity), 
+                            nameof(DemandObservation.Windspeed))
                             .AppendCacheCheckpoint(mlContext);
             // Use in-memory cache for small/medium datasets to lower training time. 
             // Do NOT use it (remove .AppendCacheCheckpoint()) when handling very large datasets.
