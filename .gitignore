@@ -3,6 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+## Data Science Tools related
+.ipynb_checkpoints
+*.onnx
+
 # Tool Runtime Dir
 /[Tt]ools/
 
