@@ -62,7 +62,7 @@ namespace SentimentAnalysisConsoleApp
                 DataViewSchema modelSchema;
                 var sentimentModel = mlContext.Model.Load(ModelPath, out modelSchema);
 
-                SentimentIssue sampleStatement = new SentimentIssue { Text = "You crappy *0(*&^&%^&%" };
+                SentimentIssue sampleStatement = new SentimentIssue { Text = "Your service is crappy *0(*!!!!!!s****." };
                 // SentimentIssue sampleStatement = new SentimentIssue { Text = "Not the best, imo" };
 
                 // Create prediction engine related to the loaded trained model
