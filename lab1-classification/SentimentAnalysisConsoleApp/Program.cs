@@ -19,7 +19,7 @@ namespace SentimentAnalysisConsoleApp
 
         private static readonly string ModelPath = GetAbsolutePath(ModelRelativePath);
 
-        private static readonly bool IsTrainingMode = false;
+        private static readonly bool IsTrainingMode = true;
 
         static void Main(string[] args)
         {

@@ -43,5 +43,6 @@ class Program
         Console.WriteLine($"Predicted price for size: {size.Size*1000} sq ft= {price.Price*100:C}k");
 
         // Predicted price for size: 2500 sq ft= $261.98k
+        mlContext.Model.Save(model, trainingData.Schema, "housePrice.zip");
     }
 }
