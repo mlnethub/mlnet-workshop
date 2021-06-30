@@ -29,7 +29,8 @@ class Program
         IDataView trainingData = mlContext.Data.LoadFromEnumerable(houseData);
 
         // 2. Specify data preparation and model training pipeline
-        var featurize = mlContext.Transforms.Concatenate("Features", new[] { "Size" });
+        var featurize = mlContext.Transforms.Concatenate("Features", new[] { "Size" })
+                        .Append(mlContext.Transforms.NormalizeMinMax("Features", "Features"));
         var trainer = mlContext.Regression.Trainers.Sdca(labelColumnName: "Price", maximumNumberOfIterations: 100);
         var pipeline = featurize.Append(trainer);
 
