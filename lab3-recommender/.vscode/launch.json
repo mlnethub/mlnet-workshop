@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/MovieRecommender/bin/Debug/netcoreapp2.2/MovieRecommender.dll",
+            "program": "${workspaceFolder}/MovieRecommender/bin/Debug/net5.0/MovieRecommender.dll",
             "args": [],
             "cwd": "${workspaceFolder}/MovieRecommender",
             "console": "internalConsole",
