@@ -51,11 +51,17 @@ namespace ObjectDetection
             // Create IDataView from empty list to obtain input data schema
             var data = mlContext.Data.LoadFromEnumerable(new List<ImageNetData>());
 
-            // Define scoring pipeline
-            var pipeline = mlContext.Transforms.LoadImages(outputColumnName: "image", imageFolder: "", inputColumnName: nameof(ImageNetData.ImagePath))
-                            .Append(mlContext.Transforms.ResizeImages(outputColumnName: "image", imageWidth: ImageNetSettings.imageWidth, imageHeight: ImageNetSettings.imageHeight, inputColumnName: "image"))
-                            .Append(mlContext.Transforms.ExtractPixels(outputColumnName: "image"))
-                            .Append(mlContext.Transforms.ApplyOnnxModel(modelFile: modelLocation, outputColumnNames: new[] { TinyYoloModelSettings.ModelOutput }, inputColumnNames: new[] { TinyYoloModelSettings.ModelInput }));
+            // Define ONNX scoring pipeline
+            var featurePipeline = mlContext.Transforms.LoadImages(outputColumnName: "image", imageFolder: "", inputColumnName: nameof(ImageNetData.ImagePath))
+                            .Append(mlContext.Transforms.ResizeImages(outputColumnName: "image", 
+                                                                imageWidth: ImageNetSettings.imageWidth, 
+                                                                imageHeight: ImageNetSettings.imageHeight, 
+                                                                inputColumnName: "image"))
+                            .Append(mlContext.Transforms.ExtractPixels(outputColumnName: "image"));
+            var onnxModel = mlContext.Transforms.ApplyOnnxModel(modelFile: modelLocation, 
+                                    outputColumnNames: new[] { TinyYoloModelSettings.ModelOutput }, 
+                                    inputColumnNames: new[] { TinyYoloModelSettings.ModelInput });
+            var pipeline = featurePipeline.Append(onnxModel);
 
             // Fit scoring pipeline
             var model = pipeline.Fit(data);
